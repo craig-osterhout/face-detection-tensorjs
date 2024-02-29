@@ -10,11 +10,13 @@ ARG NODE_VERSION=19.0.0
 
 FROM node:${NODE_VERSION}-alpine
 
-# Use production node environment by default.
-ENV NODE_ENV production
-
+# Use development node environment by default.
+ENV NODE_ENV development
 
 WORKDIR /usr/src/app
+
+# Install util-linux to ensure lscpu is available
+RUN apk add --no-cache util-linux
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.yarn to speed up subsequent builds.
@@ -23,13 +25,21 @@ WORKDIR /usr/src/app
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=yarn.lock,target=yarn.lock \
     --mount=type=cache,target=/root/.yarn \
-    yarn install --production --frozen-lockfile
+    yarn install --frozen-lockfile
+
+
+# Copy the rest of the source files into the image.
+COPY . .
+
+# Create a static directory to store the built assets
+RUN mkdir -p static
+
+# Change ownership of the /usr/src/app directory to the 'node' user
+RUN chown -R node:node /usr/src/app
 
 # Run the application as a non-root user.
 USER node
 
-# Copy the rest of the source files into the image.
-COPY . .
 
 # Expose the port that the application listens on.
 EXPOSE 1234
