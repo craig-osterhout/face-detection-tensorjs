@@ -2,6 +2,9 @@
 # If you need more help, visit the Docker compose reference guide at
 # https://docs.docker.com/go/compose-spec-reference/
 
+# This Compose file uses a modified version of the Docker Init Node.js template.
+# For more information, see https://docs.docker.com/reference/cli/docker/init/
+
 # Here the instructions define your application as a service called "server".
 # This service is built from the Dockerfile in the current directory.
 # You can add other services your application may depend on here, such as a
